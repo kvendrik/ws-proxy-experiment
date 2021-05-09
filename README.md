@@ -1,4 +1,4 @@
-```
+```bash
 # Start the dev server for index.html
 node dev.mjs
 
