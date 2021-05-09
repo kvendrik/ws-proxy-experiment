@@ -1,0 +1,15 @@
+{
+  "name": "ws-test",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "ws": "^7.4.5"
+  },
+  "engines": {
+    "node": ">13"
+  },
+  "devDependencies": {
+    "serve-dev": "^1.0.0-alpha.6"
+  }
+}

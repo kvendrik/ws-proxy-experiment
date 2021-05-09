@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Example</title>
+    <style>
+      body {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+      }
+      pre {
+        margin: 0;
+      }
+    </style>
+</head>
+<body>
+
+<pre data-person></pre>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
+<script>
+(async () => {
+  const showNode = document.querySelector('[data-person]');
+  const socket = await openSocket();
+
+  window.person = live({
+    name: "John Doe",
+    email: "john@doe.com",
+  }, showData);
+
+  showData();
+
+  function showData() {
+    showNode.innerHTML = JSON.stringify(window.person, null, 2);
+  }
+
+  function live(initialValue, onChange) {
+    let skipUpdate = false;
+    const proxyObj = new Proxy(initialValue, {
+      set(_, prop, value) {
+        if (!skipUpdate) {
+          socket.send(JSON.stringify({
+            ...initialValue,
+            [prop]: value,
+          }));
+        }
+        return Reflect.set(...arguments);
+      }
+    });
+
+    socket.addEventListener('message', (message) => {
+      skipUpdate = true;
+      for (const [key, value] of Object.entries(JSON.parse(message.data))) {
+        proxyObj[key] = value;
+      }
+      skipUpdate = false;
+      onChange(proxyObj);
+    });
+
+    return proxyObj;
+  }
+
+  async function openSocket() {
+    return new Promise((resolve) => {
+      const socket = new WebSocket('ws://localhost:8080');
+      socket.addEventListener('open', () => resolve(socket));
+    });
+  }
+})();
+</script>
+</body>
+</html>
