@@ -6,4 +6,4 @@ node dev.mjs
 node server.mjs
 ```
 
-Use the inspector to share the value of a property on `window.person` and see it change live in other windows.
+Use the inspector to change the value of a property on `window.person` and see it change live in other windows.
